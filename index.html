@@ -1,1 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Finals Lab Task 6 - MongoDB</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="falling-petals-canvas"></canvas>
+
+  <div class="container">
+    <header>
+      <h1>Finals Lab Task 6</h1>
+      <h2>Working with MongoDB</h2>
+    </header>
+
+    <section>
+      <p>
+        In this lab activity, I explored basic <strong>MongoDB operations</strong> such as inserting documents, querying data, performing updates, deletions, text searches, and managing relationships between collections. The goal was to simulate real-world scenarios like managing movies, users, posts, and comments.
+      </p>
+
+      <h2>Steps Followed</h2>
+      <ul>
+        <li><strong>Step 1 – Insert Documents:</strong> Used <code>insertMany()</code> to populate movie and user collections.</li>
+        <li><strong>Step 2 – Queries:</strong> Queried documents using <code>find()</code> with filters (writer, actor, franchise, year).</li>
+        <li><strong>Step 3 – Updates:</strong> Used <code>update()</code> with <code>$set</code> to add fields (e.g., synopses, actors).</li>
+        <li><strong>Step 4 – Text Search:</strong> Used regular expressions to include/exclude keywords like “Bilbo” and “Gandalf.”</li>
+        <li><strong>Step 5 – Deletion:</strong> Used <code>remove()</code> to delete documents (e.g., specific movies).</li>
+        <li><strong>Step 6 – Relationships:</strong> Inserted users, posts, and comments collections simulating relationships.</li>
+        <li><strong>Step 7 – Querying Related Collections:</strong> Queried relational data between users, posts, and comments.</li>
+      </ul>
+    </section>
+
+    <section class="screenshots">
+      <h2>Output Screenshots</h2>
+
+      <h3>Step 1 – Insert Documents</h3>
+      <img src="images/step1.png" alt="Insert Documents Screenshot" />
+
+      <h3>Step 2 – Queries</h3>
+      <img src="images/step2.png" alt="Query 1" />
+      <img src="images/step2.2.png" alt="Query 2" />
+      <img src="images/step2.3.png" alt="Query 3" />
+      <img src="images/step2.4.png" alt="Query 4" />
+      <img src="images/step2.5.png" alt="Query 5" />
+      <img src="images/step2.6.png" alt="Query 6" />
+
+      <h3>Step 3 – Updates</h3>
+      <img src="images/step3.png" alt="Update 1" />
+      <img src="images/step3.2.png" alt="Update 2" />
+      <img src="images/step3.3.png" alt="Update 3" />
+
+      <h3>Step 4 – Text Search</h3>
+      <img src="images/step4.png" alt="Text Search Include" />
+      <img src="images/step4.2.png" alt="Text Search Exclude" />
+
+      <h3>Step 5 – Deletion</h3>
+      <img src="images/step5.png" alt="Deletion 1" />
+      <img src="images/step5.2.png" alt="Deletion 2" />
+
+      <h3>Step 6 – Relationships</h3>
+      <pre><code>
+db.users.insertMany([
+  {_id: 1, username: "GoodGuyGreg", first_name: "Good Guy", last_name: "Greg"},
+  {_id: 2, username: "ScumbagSteve", fullname: {first: "Scumbag", last: "Steve"}}
+]);
+
+db.posts.insertMany([
+  {username: "GoodGuyGreg", title: "Passes out at Party", body: "Raises your credit score"},
+  {username: "GoodGuyGreg", title: "Steals your identity", body: "Raises your credit score"},
+  {username: "GoodGuyGreg", title: "Reports a bug in your code", body: "Sends you a pull request"},
+  {username: "ScumbagSteve", title: "Borrows something", body: "Sells it"},
+  {username: "ScumbagSteve", title: "Borrows everything", body: "The end"},
+  {username: "ScumbagSteve", title: "Forks your repo on github", body: "Sets to private"}
+]);
+
+db.comments.insertMany([
+  {username: "GoodGuyGreg", comment: "Hope you got a good deal!", post: ObjectId("POST_ID_1")},
+  {username: "GoodGuyGreg", comment: "What's mine is yours!", post: ObjectId("POST_ID_2")},
+  {username: "GoodGuyGreg", comment: "Don't violate the licensing agreement!", post: ObjectId("POST_ID_3")},
+  {username: "ScumbagSteve", comment: "It still isn't clean", post: ObjectId("POST_ID_4")},
+  {username: "ScumbagSteve", comment: "Denied your PR cause I found a hack", post: ObjectId("POST_ID_5")}
+]);
+      </code></pre>
+
+      <h3>Step 7 – Querying Related Collections</h3>
+      <img src="images/step7.png" alt="Query Relational 1" />
+      <img src="images/step7.2.png" alt="Query Relational 2" />
+      <img src="images/step7.3.png" alt="Query Relational 3" />
+      <img src="images/step7.4.png" alt="Query Relational 4" />
+      <img src="images/step7.5.png" alt="Query Relational 5" />
+      <img src="images/step7.6.png" alt="Query Relational 6" />
+      <img src="images/step7.7.png" alt="Query Relational 7" />
+    </section>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('falling-petals-canvas');
+    const ctx = canvas.getContext('2d');
+    let petals = [];
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    class Petal {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * -canvas.height;
+        this.size = Math.random() * 10 + 5;
+        this.speed = Math.random() * 2 + 1;
+        this.angle = Math.random() * 2 * Math.PI;
+      }
+
+      update() {
+        this.y += this.speed;
+        this.x += Math.sin(this.angle);
+        if (this.y > canvas.height) {
+          this.y = 0;
+          this.x = Math.random() * canvas.width;
+        }
+      }
+
+      draw() {
+        ctx.fillStyle = 'rgba(255,182,193,0.8)';
+        ctx.beginPath();
+        ctx.ellipse(this.x, this.y, this.size, this.size / 2, this.angle, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function initPetals() {
+      petals = [];
+      for (let i = 0; i < 100; i++) {
+        petals.push(new Petal());
+      }
+    }
+
+    function animatePetals() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      petals.forEach(petal => {
+        petal.update();
+        petal.draw();
+      });
+      requestAnimationFrame(animatePetals);
+    }
+
+    initPetals();
+    animatePetals();
+
+    document.addEventListener('mousemove', function(e) {
+      const trail = document.createElement('div');
+      trail.className = 'petal-trail';
+      trail.style.left = e.pageX + 'px';
+      trail.style.top = e.pageY + window.scrollY + 'px';
+      document.body.appendChild(trail);
+      setTimeout(() => trail.remove(), 1500);
+    });
+  </script>
+</body>
+</html>
 
