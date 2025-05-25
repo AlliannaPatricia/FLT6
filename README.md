@@ -19,7 +19,7 @@ Here are the steps I followed:
 - Used `update()` along with `$set` to modify existing documents by adding new fields such as synopses and actors.
 ![Sample Output](images/step3.png)
 ![Sample Output](images/step3.2.png)
-![Sample Output](images/step3.3png)
+![Sample Output](images/step3.3.png)
 ## Step 4 – Text Search
 - Performed text searches using regular expressions to locate or exclude keywords (e.g., included "Bilbo", excluded "Gandalf").
 ![Sample Output](images/step4.png)
